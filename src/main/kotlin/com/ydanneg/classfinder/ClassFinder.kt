@@ -34,6 +34,7 @@ class ClassFinder {
             .map { parseClassName(it) }
             .filter { it.name.isNotBlank() }
             .filter { match(it.name, pattern) }
+            .distinct()
             .sortedBy { it.name }
             .map { it.qualifiedName() }
             .toList()
@@ -91,19 +92,27 @@ fun match(inputString: String, pattern: String): Boolean {
     // reverse input and search words if matchEnding is true
     val inputWords = if (searchPattern.matchEnding) input.reversed() else input
     val searchWords = if (searchPattern.matchEnding) searchPattern.searchWords.reversed() else searchPattern.searchWords
-    val searchWordIterator = searchWords.iterator()
 
-    var index = 0
-    while (searchWordIterator.hasNext()) {
-        val searchWord = searchWordIterator.next()
-        val matchedIndex = findMatchedIndex(inputWords, index, searchWord, searchPattern.caseSensitive)
-        // try next if first is not matched or fail if matchEnding is true
-        if (matchedIndex == -1 || ((index != 0 || searchPattern.matchEnding) && matchedIndex > index)) {
-            return false
+    var offset = 0
+    var matched = false
+    while (!matched && inputWords.size - offset >= searchWords.size) {
+        var index = offset
+        for (searchWord in searchWords) {
+            val matchedIndex = findMatchedIndex(inputWords, index, searchWord, searchPattern.caseSensitive)
+            // try next if first is not matched or fail if matchEnding is true
+            if (matchedIndex == -1 || ((index != 0 || searchPattern.matchEnding) && matchedIndex > index)) {
+                matched = false
+                if (searchPattern.matchEnding) {
+                    return false
+                }
+                break
+            }
+            matched = true
+            index = matchedIndex + 1
         }
-        index = matchedIndex + 1
+        offset++
     }
-    return true
+    return matched
 }
 
 fun String.asSearchPattern(): SearchPattern {
@@ -112,7 +121,7 @@ fun String.asSearchPattern(): SearchPattern {
     return this.let {
         if (this.all { ch -> ch.isLowerCase() }) {
             caseSensitive = false
-            it
+            it.uppercase()
         } else {
             it
         }
@@ -127,7 +136,7 @@ fun String.asSearchPattern(): SearchPattern {
 
 fun String.asSearchQuery(): SearchQuery {
     // TODO: replace "*+" with *
-    val lastIndexOf = this.lastIndexOf("*")
+    val lastIndexOf = lastIndexOf("*")
     val startsWith = if (lastIndexOf != -1) this.substring(0, lastIndexOf) else this.ifEmpty { null }
     val endsWith = if (lastIndexOf != -1) this.substring(lastIndexOf + 1).ifEmpty { null } else null
     return SearchQuery(startsWith, endsWith)

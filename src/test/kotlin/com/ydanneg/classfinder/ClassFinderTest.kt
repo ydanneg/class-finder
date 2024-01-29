@@ -56,39 +56,41 @@ class ClassFinderTest {
         assertEquals(excepted, findMatchedIndex(input, index, searchWord))
     }
 
-    private fun assertMatch(input: String, pattern: String) {
+    private fun assertMatched(input: String, pattern: String) {
         assertTrue(match(input, pattern))
     }
 
-    private fun assertNoMatch(input: String, pattern: String) {
+    private fun assertNotMatched(input: String, pattern: String) {
         assertFalse(match(input, pattern))
     }
 
     @Test
     fun `should match`() {
-        assertMatch("FooBarBaz", "BaBa")
-        assertMatch("FooBarBaz", "BarBaz")
-        assertMatch("FooBarBaz", "FoBa")
-        assertMatch("FooBarBaz", "FB")
-        assertMatch("FooBarBaz", "B*rBaz")
-        assertMatch("FooBarBaz", "B*Baz")
-//        assertMatch("FooBarBaz", "*Baz") // TODO: fix
-        assertMatch("FooBar", "FB")
-        assertMatch("FooBar", "F*oBa")
-        assertMatch("FooBar", "*oBa")
-        assertMatch("FooBar", "*Ba")
-        assertMatch("FooBarBaz", "FBar")
-        assertMatch("FooBar", "FBar ")
-        assertMatch("FooBarzoo", "FBar ")
+        assertMatched("FooBarBaz", "FoBa")
+        assertMatched("FooBarBaz", "BaBa")
+        assertMatched("FooBarBaz", "BarBaz")
+        assertMatched("FooBarBaz", "FB")
+        assertMatched("FooBarBaz", "fbb")
+        assertMatched("FooBarBaz", "*Baz")
+        assertMatched("FooBarBaz", "B*rBaz")
+        assertMatched("FooBarBaz", "B*Baz")
+        assertMatched("FooBar", "FB")
+        assertMatched("FooBar", "F*oBa")
+        assertMatched("FooBar", "*oBa")
+        assertMatched("FooBar", "*Ba")
+        assertMatched("FooBarBaz", "FBar")
+        assertMatched("FooBar", "FBar ")
+        assertMatched("FooBarzoo", "FBar ")
     }
 
     @Test
     fun `should NOT match`() {
-        assertNoMatch("FooBar", "FBB")
-        assertNoMatch("FooBar", "BB")
-        assertNoMatch("FooBar", "Bo")
-        assertNoMatch("FooBarBaz", "FBar ")
-        assertNoMatch("FooBarBaz", "BrBaz")
+        assertNotMatched("FooBar", "FBB")
+        assertNotMatched("FooBar", "BB")
+        assertNotMatched("FooBar", "Bo")
+        assertNotMatched("FooBarBaz", "BrBaz")
+        assertNotMatched("FooBarBaz", "FBar ")
+        assertNotMatched("FooBarBaz", "fBb")
     }
 
 }
