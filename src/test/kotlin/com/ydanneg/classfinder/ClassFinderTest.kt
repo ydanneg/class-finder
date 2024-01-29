@@ -75,7 +75,7 @@ class ClassFinderTest {
         assertMatched("FooBarBaz", "*Baz")
         assertMatched("FooBarBaz", "B*rBaz")
         assertMatched("FooBarBaz", "B*Baz")
-        assertMatched("FooBar", "FB")
+        assertMatched("FooBar", "oo")
         assertMatched("FooBar", "F*oBa")
         assertMatched("FooBar", "*oBa")
         assertMatched("FooBar", "*Ba")
