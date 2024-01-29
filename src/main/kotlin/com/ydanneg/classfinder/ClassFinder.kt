@@ -100,7 +100,7 @@ fun match(inputString: String, pattern: String): Boolean {
 
     var offset = 0
     var matched = false
-    // try next if first is not matched or fail if matchEnding is true
+    // try matching with offset if input string size allows it
     while (!matched && inputWords.size - offset >= searchWords.size) {
         var index = offset
         for (searchWord in searchWords) {

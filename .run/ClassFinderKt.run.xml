@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="ClassFinderKt" type="JetRunConfigurationType" nameIsGenerated="true">
+    <option name="MAIN_CLASS_NAME" value="com.ydanneg.classfinder.ClassFinderKt" />
+    <module name="class-finder.main" />
+    <option name="PROGRAM_PARAMETERS" value="classes.txt bar" />
+    <shortenClasspath name="NONE" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
