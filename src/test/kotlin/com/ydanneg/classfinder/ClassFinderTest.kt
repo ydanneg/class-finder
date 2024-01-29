@@ -66,6 +66,7 @@ class ClassFinderTest {
 
     @Test
     fun `should match`() {
+        assertMatched("YoureLeavingUsHere", "leav")
         assertMatched("FooBarBaz", "FoBa")
         assertMatched("FooBarBaz", "BaBa")
         assertMatched("FooBarBaz", "BarBaz")

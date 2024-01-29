@@ -33,6 +33,7 @@ class ClassFinder {
             .filter { SourceVersion.isName(it) }
             .map { parseClassName(it) }
             .filter { it.name.isNotBlank() }
+            .onEach { println(it) }
             .filter { match(it.name, pattern) }
             .distinct()
             .sortedBy { it.name }
@@ -85,6 +86,11 @@ fun findMatchedIndex(input: List<String>, index: Int, searchWord: String, caseSe
 fun match(inputString: String, pattern: String): Boolean {
     val input = splitByWords(inputString)
     val searchPattern = pattern.asSearchPattern()
+
+    if (!searchPattern.caseSensitive && inputString.contains(pattern, true)) {
+        return true
+    }
+
     if (searchPattern.searchWords.size > input.size) {
         return false
     }
@@ -95,11 +101,11 @@ fun match(inputString: String, pattern: String): Boolean {
 
     var offset = 0
     var matched = false
+    // try next if first is not matched or fail if matchEnding is true
     while (!matched && inputWords.size - offset >= searchWords.size) {
         var index = offset
         for (searchWord in searchWords) {
             val matchedIndex = findMatchedIndex(inputWords, index, searchWord, searchPattern.caseSensitive)
-            // try next if first is not matched or fail if matchEnding is true
             if (matchedIndex == -1 || ((index != 0 || searchPattern.matchEnding) && matchedIndex > index)) {
                 matched = false
                 if (searchPattern.matchEnding) {
