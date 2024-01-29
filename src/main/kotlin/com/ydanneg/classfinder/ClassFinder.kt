@@ -33,7 +33,6 @@ class ClassFinder {
             .filter { SourceVersion.isName(it) }
             .map { parseClassName(it) }
             .filter { it.name.isNotBlank() }
-            .onEach { println(it) }
             .filter { match(it.name, pattern) }
             .distinct()
             .sortedBy { it.name }
