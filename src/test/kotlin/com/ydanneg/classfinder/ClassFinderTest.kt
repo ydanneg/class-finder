@@ -1,9 +1,9 @@
 package com.ydanneg.classfinder
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import kotlin.test.Test
 import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 class ClassFinderTest {
 
@@ -93,6 +93,18 @@ class ClassFinderTest {
         assertNotMatched("FooBarBaz", "BrBaz")
         assertNotMatched("FooBarBaz", "FBar ")
         assertNotMatched("FooBarBaz", "fBb")
+    }
+
+    @Test
+    fun `should build search pattern`() {
+        assertSearchPattern("FBB", SearchPattern(listOf("F", "B", "B"), caseSensitive = true, matchEnding = false))
+        assertSearchPattern("fbb", SearchPattern(listOf("F", "B", "B"), caseSensitive = false, matchEnding = false))
+        assertSearchPattern("fbb ", SearchPattern(listOf("F", "B", "B"), caseSensitive = false, matchEnding = true))
+        assertSearchPattern("FBB ", SearchPattern(listOf("F", "B", "B"), caseSensitive = true, matchEnding = true))
+    }
+
+    private fun assertSearchPattern(input: String, expected: SearchPattern) {
+        assertEquals(expected, input.asSearchPattern())
     }
 
 }

@@ -141,9 +141,10 @@ fun match(inputString: String, pattern: String): Boolean {
 
 fun String.asSearchPattern(): SearchPattern {
     val endWithSpace = this.endsWith(" ")
+    val trimmed = this.trim()
     var caseSensitive = true
-    return this.let {
-        if (this.all { ch -> ch.isLowerCase() }) {
+    return trimmed.let {
+        if (trimmed.all { ch -> ch.isLowerCase() }) {
             caseSensitive = false
             it.uppercase()
         } else {
@@ -151,7 +152,7 @@ fun String.asSearchPattern(): SearchPattern {
         }
     }.let {
         SearchPattern(
-            searchWords = splitByWords(it.trim()),
+            searchWords = splitByWords(it),
             caseSensitive = caseSensitive,
             matchEnding = endWithSpace
         )
