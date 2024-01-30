@@ -107,4 +107,25 @@ class ClassFinderTest {
         assertEquals(expected, input.asSearchPattern())
     }
 
+    @Test
+    fun `should find classes from the list if file lines`() {
+        val input = readResourceLines("/classes.txt")
+        assertFindClasses(input, "FB", listOf("c.d.FooBar", "a.b.FooBarBaz"))
+        assertFindClasses(input, "You", listOf("YourEyesAreSpinningInTheirSockets", "YoureLeavingUsHere", "YouveComeToThisPoint"))
+        assertFindClasses(input, "*Op", listOf("ScubaArgentineOperator", "TelephoneOperator"))
+        assertFindClasses(input, "*er", listOf("codeborne.MindReader", "codeborne.WishMaker"))
+        assertFindClasses(input, "fb", listOf("c.d.FooBar", "a.b.FooBarBaz"))
+
+    }
+
+    private fun assertFindClasses(fileLines: List<String>, pattern: String, expected: List<String>) {
+        assertEquals(expected, ClassFinder().findClasses(fileLines, pattern))
+    }
+
+    private fun readResourceLines(path: String): List<String> {
+        return ClassFinderTest::class.java.getResourceAsStream(path)?.use {
+            it.bufferedReader().readLines()
+        } ?: listOf()
+    }
+
 }

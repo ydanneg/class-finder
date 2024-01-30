@@ -19,15 +19,14 @@ fun main(args: Array<String>) {
 
     val (file, pattern) = args
     ClassFinder()
-        .findClasses(file, pattern)
+        .findClasses(File(file).readLines(), pattern)
         .forEach { println(it) }
 }
 
 
 class ClassFinder {
-    fun findClasses(file: String, pattern: String): List<String> {
-        return File(file)
-            .readLines()
+    fun findClasses(lines: List<String>, pattern: String): List<String> {
+        return lines
             .asSequence()
             .map { it.trim() }
             .filter { SourceVersion.isName(it) }
