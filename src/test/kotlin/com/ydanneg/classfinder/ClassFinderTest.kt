@@ -17,9 +17,8 @@ class ClassFinderTest {
         assertParsedQualifiedName("     FooBarBaz     ", "FooBarBaz")
     }
 
-    private fun assertParsedQualifiedName(input: String, expected: String) {
+    private fun assertParsedQualifiedName(input: String, expected: String) =
         assertEquals(expected, parseClassName(input).qualifiedName())
-    }
 
     @Test
     fun `should split string by words`() {
@@ -29,9 +28,8 @@ class ClassFinderTest {
         assertSplitByWords("", emptyList())
     }
 
-    private fun assertSplitByWords(input: String, expected: List<String>) {
+    private fun assertSplitByWords(input: String, expected: List<String>) =
         assertEquals(expected, splitByWords(input))
-    }
 
     @Test
     fun `should find matched index`() {
@@ -52,17 +50,14 @@ class ClassFinderTest {
         assertMatchedIndex(listOf("Foo", "Bar", "Baz"), 3, "Foo", -1)
     }
 
-    private fun assertMatchedIndex(input: List<String>, index: Int, searchWord: String, excepted: Int) {
+    private fun assertMatchedIndex(input: List<String>, index: Int, searchWord: String, excepted: Int) =
         assertEquals(excepted, findMatchedIndex(input, index, searchWord))
-    }
 
-    private fun assertMatched(input: String, pattern: String) {
+    private fun assertMatched(input: String, pattern: String) =
         assertTrue(match(input, pattern))
-    }
 
-    private fun assertNotMatched(input: String, pattern: String) {
+    private fun assertNotMatched(input: String, pattern: String) =
         assertFalse(match(input, pattern))
-    }
 
     @Test
     fun `should match`() {
@@ -97,15 +92,14 @@ class ClassFinderTest {
 
     @Test
     fun `should build search pattern`() {
-        assertSearchPattern("FBB", SearchPattern(listOf("F", "B", "B"), caseSensitive = true, matchEnding = false))
-        assertSearchPattern("fbb", SearchPattern(listOf("F", "B", "B"), caseSensitive = false, matchEnding = false))
-        assertSearchPattern("fbb ", SearchPattern(listOf("F", "B", "B"), caseSensitive = false, matchEnding = true))
-        assertSearchPattern("FBB ", SearchPattern(listOf("F", "B", "B"), caseSensitive = true, matchEnding = true))
+        assertSearchPattern("FBB", SearchPattern(listOf("F", "B", "B"), ignoreCase = false, matchEnding = false))
+        assertSearchPattern("fbb", SearchPattern(listOf("F", "B", "B"), ignoreCase = true, matchEnding = false))
+        assertSearchPattern("fbb ", SearchPattern(listOf("F", "B", "B"), ignoreCase = true, matchEnding = true))
+        assertSearchPattern("FBB ", SearchPattern(listOf("F", "B", "B"), ignoreCase = false, matchEnding = true))
     }
 
-    private fun assertSearchPattern(input: String, expected: SearchPattern) {
-        assertEquals(expected, input.asSearchPattern())
-    }
+    private fun assertSearchPattern(pattern: String, expected: SearchPattern) =
+        assertEquals(expected, pattern.asSearchPattern())
 
     @Test
     fun `should find classes from the list if file lines`() {
@@ -118,14 +112,11 @@ class ClassFinderTest {
 
     }
 
-    private fun assertFindClasses(fileLines: List<String>, pattern: String, expected: List<String>) {
+    private fun assertFindClasses(fileLines: List<String>, pattern: String, expected: List<String>) =
         assertEquals(expected, ClassFinder().findClasses(fileLines, pattern))
-    }
 
-    private fun readResourceLines(path: String): List<String> {
-        return ClassFinderTest::class.java.getResourceAsStream(path)?.use {
-            it.bufferedReader().readLines()
-        } ?: listOf()
-    }
+    private fun readResourceLines(path: String): List<String> = this::class.java.getResourceAsStream(path)?.use {
+        it.bufferedReader().readLines()
+    } ?: listOf()
 
 }

@@ -7,9 +7,9 @@ data class ClassName(val pkg: String?, val name: String)
 
 fun ClassName.qualifiedName(): String = "${pkg?.let { "$it." } ?: ""}$name"
 
-data class SearchQuery(val start: String?, val end: String? = null)
+data class SearchQuery(val start: String?, val end: String?)
 
-data class SearchPattern(val searchWords: List<String>, val caseSensitive: Boolean = true, val matchEnding: Boolean = false)
+data class SearchPattern(val searchWords: List<String>, val ignoreCase: Boolean = true, val matchEnding: Boolean = false)
 
 fun main(args: Array<String>) {
     if (args.size != 2) {
@@ -25,8 +25,9 @@ fun main(args: Array<String>) {
 
 
 class ClassFinder {
-    fun findClasses(lines: List<String>, pattern: String): List<String> {
-        return lines
+
+    fun findClasses(lines: List<String>, pattern: String): List<String> =
+        lines
             .asSequence()
             .map { it.trim() }
             .filter { SourceVersion.isName(it) }
@@ -37,7 +38,6 @@ class ClassFinder {
             .sortedBy { it.name }
             .map { it.qualifiedName() }
             .toList()
-    }
 }
 
 /**
@@ -75,23 +75,23 @@ fun splitByWords(input: String): List<String> {
  * If the input string is not a valid class name, the [ClassName.pkg] will be null.
  * Example: "com.ydanneg.ClassFinder" -> ClassName("com.ydanneg", "ClassFinder")
  */
-fun parseClassName(input: String): ClassName {
-    val trimmedInput = input.trim()
-    val lastIndexOfDot = trimmedInput.lastIndexOf(".")
+fun parseClassName(className: String): ClassName {
+    val trimmed = className.trim()
+    val lastIndexOfDot = trimmed.lastIndexOf(".")
     if (lastIndexOfDot == -1) {
-        return ClassName(null, trimmedInput)
+        return ClassName(null, trimmed)
     }
-    return ClassName(trimmedInput.substring(0, lastIndexOfDot), trimmedInput.substring(lastIndexOfDot + 1, trimmedInput.length))
+    return ClassName(trimmed.substring(0, lastIndexOfDot), trimmed.substring(lastIndexOfDot + 1, trimmed.length))
 }
 
-fun findMatchedIndex(input: List<String>, index: Int, searchWord: String, caseSensitive: Boolean = true): Int {
+fun findMatchedIndex(inputWords: List<String>, index: Int, searchWord: String, ignoreCase: Boolean = false): Int {
     val searchQuery = searchWord.asSearchQuery()
-    if (index < input.size) {
-        for (i in index until input.size) {
-            if (searchQuery.start != null && !input[i].startsWith(searchQuery.start, ignoreCase = !caseSensitive)) {
+    if (index < inputWords.size) {
+        for (i in index until inputWords.size) {
+            if (searchQuery.start != null && !inputWords[i].startsWith(searchQuery.start, ignoreCase = ignoreCase)) {
                 continue
             }
-            if (searchQuery.end != null && !input[i].endsWith(searchQuery.end, ignoreCase = !caseSensitive)) {
+            if (searchQuery.end != null && !inputWords[i].endsWith(searchQuery.end, ignoreCase = ignoreCase)) {
                 continue
             }
             return i
@@ -104,7 +104,7 @@ fun match(inputString: String, pattern: String): Boolean {
     val input = splitByWords(inputString)
     val searchPattern = pattern.asSearchPattern()
 
-    if (!searchPattern.caseSensitive && inputString.contains(pattern, true)) {
+    if (searchPattern.ignoreCase && inputString.contains(pattern, true)) {
         return true
     }
 
@@ -122,7 +122,7 @@ fun match(inputString: String, pattern: String): Boolean {
     while (!matched && inputWords.size - offset >= searchWords.size) {
         var index = offset
         for (searchWord in searchWords) {
-            val matchedIndex = findMatchedIndex(inputWords, index, searchWord, searchPattern.caseSensitive)
+            val matchedIndex = findMatchedIndex(inputWords, index, searchWord, searchPattern.ignoreCase)
             if (matchedIndex == -1 || ((index != 0 || searchPattern.matchEnding) && matchedIndex > index)) {
                 matched = false
                 if (searchPattern.matchEnding) {
@@ -139,12 +139,12 @@ fun match(inputString: String, pattern: String): Boolean {
 }
 
 fun String.asSearchPattern(): SearchPattern {
-    val endWithSpace = this.endsWith(" ")
+    val hasTrailingSpace = this.endsWith(" ")
     val trimmed = this.trim()
-    var caseSensitive = true
+    var ignoreCase = false
     return trimmed.let {
         if (trimmed.all { ch -> ch.isLowerCase() }) {
-            caseSensitive = false
+            ignoreCase = true
             it.uppercase()
         } else {
             it
@@ -152,8 +152,8 @@ fun String.asSearchPattern(): SearchPattern {
     }.let {
         SearchPattern(
             searchWords = splitByWords(it),
-            caseSensitive = caseSensitive,
-            matchEnding = endWithSpace
+            ignoreCase = ignoreCase,
+            matchEnding = hasTrailingSpace
         )
     }
 }
